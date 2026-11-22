@@ -25,7 +25,7 @@ class Account(Base):
     access_token: Mapped[str] = mapped_column(Text)
     expires_at: Mapped[datetime] = mapped_column(DateTime)  # UTC, naive
 
-    posts: Mapped[list["Post"]] = relationship(back_populates="account")
+    posts: Mapped[list["Post"]] = relationship(back_populates="account", cascade="all, delete-orphan")
 
     @property
     def urn(self) -> str:

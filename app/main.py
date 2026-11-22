@@ -111,12 +111,14 @@ def callback(request: Request, code: str | None = None, state: str | None = None
 @app.post("/disconnect")
 def disconnect(request: Request):
     with SessionLocal() as db:
-        for post in db.query(Post).filter(Post.status == "scheduled"):
+        for post in db.query(Post).all():
+            scheduler.disarm(post.id)
+            scheduler.delete_files(post.images)
             db.delete(post)
         for account in db.query(Account):
             db.delete(account)
         db.commit()
-    _flash(request, "Disconnected. Scheduled posts were removed.")
+    _flash(request, "Disconnected. All posts were removed.")
     return RedirectResponse("/", status_code=303)
 
 
